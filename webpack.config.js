@@ -9,6 +9,10 @@ const HtmlBeautifyWebpackPlugin = require('html-beautify-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ManifestWebpackPlugin = require('webpack-manifest-plugin');
 const HtmlWebpackInlineSVGPlugin = require('html-webpack-inline-svg-plugin');
+const imageminGifsicle = require('imagemin-gifsicle');
+const imageminMoxjpeg = require('imagemin-mozjpeg');
+const imageminOptipng = require('imagemin-optipng');
+const imageminSvgo = require('imagemin-svgo');
 
 const devMode = process.env.NODE_ENV !== 'production';
 
@@ -74,13 +78,36 @@ module.exports = {
             { test: /\.pug$/, loader: 'pug-loader' },
 
             {
-                test: /\.(eot|ttf|woff|svg)$/,
+                test: /\.(eot|ttf|woff)$/,
                 use: [
                     {
                         loader: 'file-loader',
                         options: {
                             name: '[path][name].[ext]',
                             context: 'src',
+                        },
+                    },
+                ],
+            },
+
+            {
+                test: /\.(jpe?g|png|gif|svg)$/i,
+                use: [
+                    {
+                        loader: 'url-loader',
+                        options: {
+                            limit: 8192,
+                        },
+                    },
+                    {
+                        loader: 'img-loader',
+                        options: {
+                            plugins: [
+                                imageminGifsicle({}),
+                                imageminMoxjpeg({}),
+                                imageminOptipng({}),
+                                imageminSvgo({ svgoConfig }),
+                            ],
                         },
                     },
                 ],
